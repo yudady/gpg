@@ -34,6 +34,9 @@ import org.bouncycastle.openpgp.operator.jcajce.JcePBESecretKeyEncryptorBuilder;
  * Where identity is the name to be associated with the public key. The keys are placed in the files pub.[asc|bpg] and secret.[asc|bpg].
  */
 public class RSAKeyPairGenerator {
+
+
+
 	private static void exportKeyPair(OutputStream secretOut, OutputStream publicOut, KeyPair pair, String identity, char[] passPhrase, boolean armor)
 			throws IOException, InvalidKeyException, NoSuchProviderException, SignatureException, PGPException {
 		if (armor) {

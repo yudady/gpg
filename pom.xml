@@ -10,7 +10,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-
+		<slf4j.version>1.6.1</slf4j.version>
+		<log4j.version>1.2.16</log4j.version>
 	</properties>
 
 
@@ -44,7 +45,43 @@
 			<version>1.54</version>
 		</dependency>
 
+		<dependency>
+			<groupId>me.sniggle</groupId>
+			<artifactId>simple-pgp-api</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>me.sniggle</groupId>
+			<artifactId>simple-pgp-java</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 
+
+
+		<!-- Logging in favor of slf4j -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>${log4j.version}</version>
+			<scope>runtime</scope>
+		</dependency>
 
 	</dependencies>
 

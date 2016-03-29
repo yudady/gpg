@@ -133,7 +133,7 @@ public class PGPUtils {
 		if (!secretKey.isSigningKey()) {
 			throw new IllegalArgumentException("Private key does not allow signing.");
 		}
-		if (secretKey.getPublicKey().isRevoked()) {
+		if (secretKey.getPublicKey().hasRevocation()) {
 			throw new IllegalArgumentException("Private key has been revoked.");
 		}
 		if (!hasKeyFlags(secretKey.getPublicKey(), KeyFlags.SIGN_DATA)) {
