@@ -1,3 +1,7 @@
+/**
+ * http://sloanseaman.com/wordpress/2012/05/13/revisited-pgp-encryptiondecryption-in-java/
+ */
+
 package com.foya.gpg.ok.tool;
 
 import java.io.FileInputStream;

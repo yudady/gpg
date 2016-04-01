@@ -73,19 +73,19 @@ public class SignVerify {
 
 		PGPPublicKeyRingCollection pgpPubRingCollection = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(keyIn), new JcaKeyFingerprintCalculator());
 
-		//InputStream dIn = new BufferedInputStream(new FileInputStream(fileName));
+		InputStream dIn = new BufferedInputStream(new FileInputStream(fileName));
 
 		PGPSignature sig = p3.get(0);
 		PGPPublicKey key = pgpPubRingCollection.getPublicKey(sig.getKeyID());
 
 		sig.init(new JcaPGPContentVerifierBuilderProvider().setProvider("BC"), key);
 
-//		int ch;
-//		while ((ch = dIn.read()) >= 0) {
-//			sig.update((byte) ch);
-//		}
-//
-//		dIn.close();
+		int ch;
+		while ((ch = dIn.read()) >= 0) {
+			sig.update((byte) ch);
+		}
+
+		dIn.close();
 
 		if (sig.verify()) {
 			System.out.println("signature verified.");

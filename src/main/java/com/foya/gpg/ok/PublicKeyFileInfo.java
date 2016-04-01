@@ -1,12 +1,15 @@
 package com.foya.gpg.ok;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.PublicKey;
 import java.util.Iterator;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPKeyConverter;
 import org.bouncycastle.util.encoders.Hex;
@@ -16,19 +19,24 @@ import com.foya.gpg.ok.tool.PGPUtils;
 public class PublicKeyFileInfo {
 
 	public static void main(String[] args) throws Exception {
+		String[] arr = new String[] { "tommy_public.asc", "tstar_public.asc", "receiverPublicKey", };
+		String publicKeyFileName = "F:/foya/02.tommy4Git/gpg/src/main/resources/";
+		keyInfo(publicKeyFileName + arr[2]);
 
-		String publicKeyFileName = "F:/foya/02.tommy4Git/gpg/src/main/resources/tommy_public.asc";
+	}
+
+	private static void keyInfo(String publicKeyFileName) throws FileNotFoundException, IOException, PGPException {
 		FileInputStream publicKeyIn = new FileInputStream(publicKeyFileName);
 
 		PGPPublicKey pgpPublicKey = PGPUtils.readPublicKey(publicKeyIn);
-		System.out.println(ToStringBuilder.reflectionToString(pgpPublicKey,ToStringStyle.MULTI_LINE_STYLE));
+		System.out.println(ToStringBuilder.reflectionToString(pgpPublicKey, ToStringStyle.MULTI_LINE_STYLE));
 		System.out.println("-----------");
-		System.out.println(ToStringBuilder.reflectionToString(pgpPublicKey.getPublicKeyPacket(),ToStringStyle.MULTI_LINE_STYLE));
+		System.out.println(ToStringBuilder.reflectionToString(pgpPublicKey.getPublicKeyPacket(), ToStringStyle.MULTI_LINE_STYLE));
 		System.out.println("-----------");
 
 		Iterator signatures = pgpPublicKey.getSignatures();
-		while(signatures.hasNext()){
-			System.out.println(ToStringBuilder.reflectionToString(signatures.next(),ToStringStyle.MULTI_LINE_STYLE));
+		while (signatures.hasNext()) {
+			System.out.println(ToStringBuilder.reflectionToString(signatures.next(), ToStringStyle.MULTI_LINE_STYLE));
 		}
 		System.out.println("-----------");
 

@@ -156,14 +156,14 @@ public class SignedFileProcessorTommy {
 
 	public static void main(String[] args) throws Exception {
 		Security.addProvider(new BouncyCastleProvider());
-		FileInputStream keyIn = new FileInputStream(new File("F:/foya/00.work/gpg/src/main/resources/secring.gpg"));
-		FileOutputStream out = new FileOutputStream("e:/123.en.asc");
+		FileInputStream keyIn = new FileInputStream(new File("F:/foya/02.tommy4Git/gpg/src/main/resources/secring.gpg"));
+		FileOutputStream out = new FileOutputStream("e:/123.sign.txt");
 
 		signFile("e:/123.txt", keyIn, out, "tommy".toCharArray(), true);
 
-		FileInputStream in = new FileInputStream(new File("e:/123.en.asc"));
-		FileInputStream pKeyIn = new FileInputStream(new File("F:/foya/00.work/gpg/src/main/resources/pubring.gpg"));
-		FileOutputStream outVerify = new FileOutputStream(new File("e:/123.de.txt"));
+		FileInputStream in = new FileInputStream(new File("e:/123.sign.txt"));
+		FileInputStream pKeyIn = new FileInputStream(new File("F:/foya/02.tommy4Git/gpg/src/main/resources/pubring.gpg"));
+		FileOutputStream outVerify = new FileOutputStream(new File("e:/123.verify.txt"));
 		verifyFile(in, pKeyIn, outVerify);
 
 		keyIn.close();
