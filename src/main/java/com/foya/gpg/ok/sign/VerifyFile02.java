@@ -32,19 +32,19 @@ import org.slf4j.LoggerFactory;
 import me.sniggle.pgp.crypt.MessageEncryptor;
 import me.sniggle.pgp.crypt.PGPWrapperFactory;
 
-public class VerifyFile {
+public class VerifyFile02 {
 
-	private static final Logger mLogger = LoggerFactory.getLogger(VerifyFile.class);
+	private static final Logger mLogger = LoggerFactory.getLogger(VerifyFile02.class);
 
 	public static boolean verifyFile(InputStream signSourceIn, InputStream publicKeyIn , String outVerifyFile) throws Exception {
-		byte[] signSourceInBytes = VerifyFile.inputStream2BytesLog(signSourceIn);
+		byte[] signSourceInBytes = VerifyFile02.inputStream2BytesLog(signSourceIn);
 		System.out.println("[LOG] 1 s-------------");
 		Security.addProvider(new BouncyCastleProvider());
 		System.out.println("[LOG] 1 e-------------");
 
 
 		System.out.println("[LOG] 2 s-------------");
-		byte[] decoderInBytes = VerifyFile.inputStream2BytesLog(PGPUtil.getDecoderStream(new ByteArrayInputStream(signSourceInBytes)));
+		byte[] decoderInBytes = VerifyFile02.inputStream2BytesLog(PGPUtil.getDecoderStream(new ByteArrayInputStream(signSourceInBytes)));
 		System.out.println("[LOG] 2 e-------------");
 		PGPObjectFactory pgpFact = new JcaPGPObjectFactory(new ByteArrayInputStream(decoderInBytes));
 
@@ -54,7 +54,7 @@ public class VerifyFile {
 
 
 		System.out.println("[LOG] 3 s-------------");
-		byte[] dataStreamBytes = VerifyFile.inputStream2BytesLog(pgpCompressedData.getDataStream());
+		byte[] dataStreamBytes = VerifyFile02.inputStream2BytesLog(pgpCompressedData.getDataStream());
 		System.out.println("[LOG] 3 e-------------");
 
 		PGPObjectFactory pgpFact02 = new JcaPGPObjectFactory(new ByteArrayInputStream(dataStreamBytes));
@@ -68,7 +68,7 @@ public class VerifyFile {
 
 
 		System.out.println("[LOG] 4 s-------------");
-		byte[] dInBytes = VerifyFile.inputStream2BytesLog(pgpLiteralData.getInputStream());
+		byte[] dInBytes = VerifyFile02.inputStream2BytesLog(pgpLiteralData.getInputStream());
 		System.out.println("[LOG] 4 e-------------");
 
 
@@ -77,9 +77,12 @@ public class VerifyFile {
 		PGPPublicKey key = pgpRing.getPublicKey(ops.getKeyID());
 
 		ops.init(new JcaPGPContentVerifierBuilderProvider().setProvider(new BouncyCastleProvider()), key);
+		//OutputStream decryptOut = new FileOutputStream(new File(outVerifyFile));
 		for(int i = 0 ; i < dInBytes.length ; i++){
 			ops.update(dInBytes[i]);
+			//decryptOut.write(dInBytes[i]);
 		}
+		//decryptOut.close();
 
 
 
@@ -92,17 +95,6 @@ public class VerifyFile {
 			mLogger.debug("[LOG]***********[signature verified]***********");
 			mLogger.debug("[LOG]***********[signature verified]***********");
 			mLogger.debug("[LOG]***********[signature verified]***********");
-
-
-			OutputStream decryptOut = new FileOutputStream(new File(outVerifyFile));
-			for(int i = 0 ; i < dInBytes.length ; i++){
-				decryptOut.write(dInBytes[i]);
-			}
-			decryptOut.close();
-
-
-
-
 			return true;
 		}
 		mLogger.debug("[LOG]***********[signature verification failed]***********");
@@ -135,25 +127,6 @@ public class VerifyFile {
 	}
 
 
-	public void decrypt() throws Exception {
-		String receiverPassword = "tommy";
-		String receiverPriveteKey = "F:/foya/02.tommy4Git/gpg/src/main/resources/tommy_private.asc";
-		InputStream privateKeyOfReceiver = null;
-		InputStream encryptedData = null;
-		OutputStream target = null;
 
-		MessageEncryptor encyptor = PGPWrapperFactory.getEncyptor();
-		try {
-			String passwordOfReceiversPrivateKey = receiverPassword;
-			privateKeyOfReceiver = new FileInputStream(new File(receiverPriveteKey));
-			encryptedData = new FileInputStream(new File("C:/Users/tommy/Desktop/123.verify.sign.txt"));
-			target = new FileOutputStream(new File("C:/Users/tommy/Desktop/123.verify.decrypt.txt"));
-			encyptor.decrypt(passwordOfReceiversPrivateKey, privateKeyOfReceiver, encryptedData, target);
-		} finally {
-			IOUtils.closeQuietly(privateKeyOfReceiver);
-			IOUtils.closeQuietly(encryptedData);
-			IOUtils.closeQuietly(target);
-		}
-	}
 
 }
