@@ -43,6 +43,22 @@ public class VerifyFile4PublicKey {
 
 	private static final Logger mLogger = LoggerFactory.getLogger(VerifyFile4PublicKey.class);
 
+
+	@Test
+	public void verifyAndDecrypt() {
+		try {
+			FileInputStream in = new FileInputStream(new File("e:/tmp/123.encrypt.sign.txt"));
+			//			FileInputStream in = new FileInputStream(new File("e:/tmp/123.encrypt.sign.error.txt"));
+			FileInputStream pKeyIn = new FileInputStream(new File("F:/foya/02.tommy4Git/gpg/src/main/resources/tstar_public.asc"));
+			verifyFile(in, pKeyIn, "C:/Users/tommy/Desktop/123.verify.sign.txt");
+
+			in.close();
+			pKeyIn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public boolean verifyFile(InputStream signSourceIn, InputStream publicKeyIn, String outVerifyFile) throws Exception {
 		Security.addProvider(new BouncyCastleProvider());
 
@@ -81,14 +97,13 @@ public class VerifyFile4PublicKey {
 		mLogger.debug("[LOG][getKeyID][檔案裡面的key id]" + keyID);
 
 		mLogger.debug("[LOG][getKeyAlgorithm]" + FoyaAlgorithm.publicKeyAlgorithmTags(pgpOnePassSignature.getKeyAlgorithm()));
-		mLogger.debug("[LOG][getHashAlgorithm]" + FoyaAlgorithm.publicKeyAlgorithmTags(pgpOnePassSignature.getHashAlgorithm()));
+		mLogger.debug("[LOG][getHashAlgorithm]" + FoyaAlgorithm.hashAlgorithmTags(pgpOnePassSignature.getHashAlgorithm()));
 		mLogger.debug("[LOG][getSignatureType]" + pgpOnePassSignature.getSignatureType());
 		mLogger.debug("[LOG][pgpOnePassSignature]" + ToStringBuilder.reflectionToString(pgpOnePassSignature));
 		/**
 		 * 2
 		 */
 		PGPLiteralData pgpLiteralData = (PGPLiteralData) masterFactory.nextObject();
-
 		mLogger.debug("[LOG] 4 s-------------");
 		byte[] dInBytes = this.inputStream2BytesLog(pgpLiteralData.getInputStream());
 		mLogger.debug("[LOG] 4 e-------------");
@@ -110,6 +125,14 @@ public class VerifyFile4PublicKey {
 		 * 3
 		 */
 		PGPSignatureList pgpSignatureList = (PGPSignatureList) masterFactory.nextObject();
+
+
+		mLogger.debug("[LOG][pgpCompressedData.Algorithm(壓縮格式)]" + FoyaAlgorithm.pgpCompressedDataAlgorithmTags(pgpCompressedData.getAlgorithm()));
+		mLogger.debug("[LOG][getKeyAlgorithm]" + FoyaAlgorithm.publicKeyAlgorithmTags(pgpOnePassSignature.getKeyAlgorithm()));
+		mLogger.debug("[LOG][getHashAlgorithm]" + FoyaAlgorithm.hashAlgorithmTags(pgpOnePassSignature.getHashAlgorithm()));
+
+
+
 
 		if (pgpOnePassSignature.verify(pgpSignatureList.get(0))) {
 			mLogger.debug("[LOG]***********[signature verified]***********");
@@ -180,21 +203,9 @@ public class VerifyFile4PublicKey {
 		return signSourceInBytes;
 	}
 
-	@Test
-	public void verifyAndDecrypt() {
-		try {
-			FileInputStream in = new FileInputStream(new File("e:/tmp/123.encrypt.sign.txt"));
-			//			FileInputStream in = new FileInputStream(new File("e:/tmp/123.encrypt.sign.error.txt"));
-			FileInputStream pKeyIn = new FileInputStream(new File("F:/foya/02.tommy4Git/gpg/src/main/resources/tstar_public.asc"));
-			verifyFile(in, pKeyIn, "C:/Users/tommy/Desktop/123.verify.sign.txt");
 
-			in.close();
-			pKeyIn.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	@Test
+
+	//@Test
 	public void publicKeyInfoTest() {
 		try {
 			publicKeyInfo("F:/foya/02.tommy4Git/gpg/src/main/resources/tstar_public.asc");
@@ -202,8 +213,5 @@ public class VerifyFile4PublicKey {
 			e.printStackTrace();
 		}
 	}
-
-
-
 
 }

@@ -18,22 +18,22 @@ public class DecryptFile4PrivateKey {
 
 	private static final Logger mLogger = LoggerFactory.getLogger(DecryptFile4PrivateKey.class);
 
-
-
 	@Test
-	public void decrypt() throws Exception {
-		String receiverPassword = "tommy";
+	public void decryptTest() throws Exception {
+		String passwordOfReceiversPrivateKey = "tommy";
 		String receiverPriveteKey = "F:/foya/02.tommy4Git/gpg/src/main/resources/tommy_private.asc";
-		InputStream privateKeyOfReceiver = null;
-		InputStream encryptedData = null;
-		OutputStream target = null;
+		InputStream privateKeyOfReceiver = new FileInputStream(new File(receiverPriveteKey));
+		InputStream encryptedData = new FileInputStream(new File("C:/Users/tommy/Desktop/123.verify.sign.txt"));
+		OutputStream target = new FileOutputStream(new File("C:/Users/tommy/Desktop/123.verify.decrypt.txt"));
 
-		MessageEncryptor encyptor = PGPWrapperFactory.getEncyptor();
+		//
+		decrypt(passwordOfReceiversPrivateKey, privateKeyOfReceiver, encryptedData, target);
+	}
+
+	public void decrypt(String passwordOfReceiversPrivateKey, InputStream privateKeyOfReceiver, InputStream encryptedData, OutputStream target) throws Exception {
+
 		try {
-			String passwordOfReceiversPrivateKey = receiverPassword;
-			privateKeyOfReceiver = new FileInputStream(new File(receiverPriveteKey));
-			encryptedData = new FileInputStream(new File("C:/Users/tommy/Desktop/123.verify.sign.txt"));
-			target = new FileOutputStream(new File("C:/Users/tommy/Desktop/123.verify.decrypt.txt"));
+			MessageEncryptor encyptor = PGPWrapperFactory.getEncyptor();
 			encyptor.decrypt(passwordOfReceiversPrivateKey, privateKeyOfReceiver, encryptedData, target);
 		} finally {
 			IOUtils.closeQuietly(privateKeyOfReceiver);
