@@ -1,4 +1,4 @@
-package com.foya.gpg.ok.sign;
+package com.foya.gpg.tool;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,7 +13,6 @@ import java.security.Security;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.bouncycastle.bcpg.PublicKeyAlgorithmTags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPCompressedData;
 import org.bouncycastle.openpgp.PGPLiteralData;
@@ -31,55 +30,30 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import me.sniggle.pgp.crypt.MessageEncryptor;
-import me.sniggle.pgp.crypt.PGPWrapperFactory;
+import com.foya.gpg.tool.algorithm.FoyaAlgorithm;
 
-public class VerifyFile {
+public class VerifyFile4PublicKey {
 
-	private static final Logger mLogger = LoggerFactory.getLogger(VerifyFile.class);
-
-	public static String getAlgorithm(int algId) {
-		switch (algId) {
-			case PublicKeyAlgorithmTags.RSA_GENERAL:
-				return "RSA_GENERAL";
-			case PublicKeyAlgorithmTags.RSA_ENCRYPT:
-				return "RSA_ENCRYPT";
-			case PublicKeyAlgorithmTags.RSA_SIGN:
-				return "RSA_SIGN";
-			case PublicKeyAlgorithmTags.ELGAMAL_ENCRYPT:
-				return "ELGAMAL_ENCRYPT";
-			case PublicKeyAlgorithmTags.DSA:
-				return "DSA";
-			case PublicKeyAlgorithmTags.ECDH:
-				return "ECDH";
-			case PublicKeyAlgorithmTags.ECDSA:
-				return "ECDSA";
-			case PublicKeyAlgorithmTags.ELGAMAL_GENERAL:
-				return "ELGAMAL_GENERAL";
-			case PublicKeyAlgorithmTags.DIFFIE_HELLMAN:
-				return "DIFFIE_HELLMAN";
-		}
-
-		return "unknown";
-	}
+	private static final Logger mLogger = LoggerFactory.getLogger(VerifyFile4PublicKey.class);
 
 	public static boolean verifyFile(InputStream signSourceIn, InputStream publicKeyIn, String outVerifyFile) throws Exception {
-		byte[] signSourceInBytes = VerifyFile.inputStream2BytesLog(signSourceIn);
+		byte[] signSourceInBytes = VerifyFile4PublicKey.inputStream2BytesLog(signSourceIn);
 		System.out.println("[LOG] 1 s-------------");
 		Security.addProvider(new BouncyCastleProvider());
 		System.out.println("[LOG] 1 e-------------");
 
 		System.out.println("[LOG] 2 s-------------");
-		byte[] decoderInBytes = VerifyFile.inputStream2BytesLog(PGPUtil.getDecoderStream(new ByteArrayInputStream(signSourceInBytes)));
+		byte[] decoderInBytes = VerifyFile4PublicKey.inputStream2BytesLog(PGPUtil.getDecoderStream(new ByteArrayInputStream(signSourceInBytes)));
 		System.out.println("[LOG] 2 e-------------");
 		PGPObjectFactory factory = new JcaPGPObjectFactory(new ByteArrayInputStream(decoderInBytes));
 
 		PGPCompressedData pgpCompressedData = (PGPCompressedData) factory.nextObject();
+
 		mLogger.debug("[LOG][pgpCompressedData]" + ToStringBuilder.reflectionToString(pgpCompressedData));
-		mLogger.debug("[LOG][pgpCompressedData]" + VerifyFile.getAlgorithm(pgpCompressedData.getAlgorithm()));
+		mLogger.debug("[LOG][pgpCompressedData.Algorithm]" + FoyaAlgorithm.pgpCompressedDataAlgorithmTags(pgpCompressedData.getAlgorithm()));
 
 		System.out.println("[LOG] 3 s-------------");
-		byte[] dataStreamBytes = VerifyFile.inputStream2BytesLog(pgpCompressedData.getDataStream());
+		byte[] dataStreamBytes = VerifyFile4PublicKey.inputStream2BytesLog(pgpCompressedData.getDataStream());
 		System.out.println("[LOG] 3 e-------------");
 
 		PGPObjectFactory pgpObjectFactory = new JcaPGPObjectFactory(new ByteArrayInputStream(dataStreamBytes));
@@ -88,13 +62,14 @@ public class VerifyFile {
 
 		PGPOnePassSignature pgpOnePassSignature = pgpOnePassSignatureList.get(0);
 		mLogger.debug("[LOG][pgpOnePassSignature]" + ToStringBuilder.reflectionToString(pgpOnePassSignature));
-		mLogger.debug("[LOG][pgpOnePassSignature]" + ToStringBuilder.reflectionToString(pgpOnePassSignature.getKeyID()));
-		mLogger.debug("[LOG][pgpOnePassSignature]" + ToStringBuilder.reflectionToString(pgpOnePassSignature.getKeyAlgorithm()));
-		mLogger.debug("[LOG][pgpOnePassSignature]" + ToStringBuilder.reflectionToString(pgpOnePassSignature.getSignatureType()));
+		mLogger.debug("[LOG][pgpOnePassSignature]" + pgpOnePassSignature.getKeyID());
+		mLogger.debug("[LOG][getKeyAlgorithm]" + FoyaAlgorithm.publicKeyAlgorithmTags(pgpOnePassSignature.getKeyAlgorithm()));
+		mLogger.debug("[LOG][getHashAlgorithm]" + FoyaAlgorithm.publicKeyAlgorithmTags(pgpOnePassSignature.getHashAlgorithm()));
+		mLogger.debug("[LOG][getSignatureType]" + pgpOnePassSignature.getSignatureType());
 		PGPLiteralData pgpLiteralData = (PGPLiteralData) pgpObjectFactory.nextObject();
 
 		System.out.println("[LOG] 4 s-------------");
-		byte[] dInBytes = VerifyFile.inputStream2BytesLog(pgpLiteralData.getInputStream());
+		byte[] dInBytes = VerifyFile4PublicKey.inputStream2BytesLog(pgpLiteralData.getInputStream());
 		System.out.println("[LOG] 4 e-------------");
 
 		PGPPublicKeyRingCollection pgpRing = new PGPPublicKeyRingCollection(PGPUtil.getDecoderStream(publicKeyIn), new JcaKeyFingerprintCalculator());
@@ -149,27 +124,6 @@ public class VerifyFile {
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
-		}
-	}
-
-	public void decrypt() throws Exception {
-		String receiverPassword = "tommy";
-		String receiverPriveteKey = "F:/foya/02.tommy4Git/gpg/src/main/resources/tommy_private.asc";
-		InputStream privateKeyOfReceiver = null;
-		InputStream encryptedData = null;
-		OutputStream target = null;
-
-		MessageEncryptor encyptor = PGPWrapperFactory.getEncyptor();
-		try {
-			String passwordOfReceiversPrivateKey = receiverPassword;
-			privateKeyOfReceiver = new FileInputStream(new File(receiverPriveteKey));
-			encryptedData = new FileInputStream(new File("C:/Users/tommy/Desktop/123.verify.sign.txt"));
-			target = new FileOutputStream(new File("C:/Users/tommy/Desktop/123.verify.decrypt.txt"));
-			encyptor.decrypt(passwordOfReceiversPrivateKey, privateKeyOfReceiver, encryptedData, target);
-		} finally {
-			IOUtils.closeQuietly(privateKeyOfReceiver);
-			IOUtils.closeQuietly(encryptedData);
-			IOUtils.closeQuietly(target);
 		}
 	}
 
